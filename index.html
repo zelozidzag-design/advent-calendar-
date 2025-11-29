@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Uprising Advent Calendar</title>
+<style>
+body {
+  margin:0; padding:0;
+  font-family: 'Trebuchet MS', sans-serif;
+  background:#0b0f17;
+  color:white;
+  overflow:hidden;
+}
+#snow canvas { position:fixed; top:0; left:0; pointer-events:none; }
+header {
+  text-align:center; padding:20px;
+}
+.grid {
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap:12px;
+  padding:20px;
+  max-width:900px;
+  margin:0 auto;
+}
+.cell {
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.2);
+  height:110px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px;
+  cursor:pointer;
+  transition:0.3s;
+  border-radius:10px;
+  position:relative;
+}
+.cell.locked { filter:brightness(0.4); cursor:not-allowed; }
+.cell:hover:not(.locked) { transform:scale(1.06); background:rgba(255,255,255,0.15); }
+.msg {
+  position:fixed; top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  background:rgba(0,0,0,0.8);
+  padding:20px 30px;
+  border-radius:12px;
+  display:none;
+  max-width:400px;
+  text-align:center;
+}
+.close { margin-top:15px; cursor:pointer; padding:8px 14px; background:#ff5733; border-radius:8px; }
+</style>
+</head>
+<body>
+<div id="snow"></div>
+
+<header>
+  <img src="logo.png" width="120"><br>
+  <h1>Uprising Advent Calendar</h1>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<div class="msg" id="msgBox">
+  <div id="msgText"></div>
+  <div class="close" onclick="msgBox.style.display='none'">Close</div>
+</div>
+
+<script>
+// simple snow
+const snow = document.getElementById("snow");
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+snow.appendChild(canvas);
+canvas.width = innerWidth; canvas.height = innerHeight;
+let flakes = Array.from({length:120}, ()=>({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:1+Math.random()*3, d:Math.random()+1}));
+function drawSnow(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="white"; ctx.beginPath();
+  flakes.forEach(f=>{ctx.moveTo(f.x,f.y); ctx.arc(f.x,f.y,f.r,0,Math.PI*2);});
+  ctx.fill();
+  flakes.forEach(f=>{f.y+=Math.pow(f.d,2)+1; f.x+=Math.sin(f.y*0.01);
+    if(f.y > canvas.height){ f.y=0; f.x=Math.random()*canvas.width; }
+  });
+  requestAnimationFrame(drawSnow);
+}
+drawSnow();
+
+const messages = [
+  "Day 1 – Stay strong, Uprising warrior!",
+  "Day 2 – Your light inspires the faction.",
+  "Day 3 – Courage burns brighter than any flame.",
+  "Day 4 – You are never alone on this path.",
+  "Day 5 – Your presence strengthens the team.",
+  "Day 6 – Hope is your greatest weapon.",
+  "Day 7 – Your spirit lifts us all.",
+  "Day 8 – Together, we rise.",
+  "Day 9 – You make Uprising proud.",
+  "Day 10 – Strength grows with every step.",
+  "Day 11 – Your bravery shapes our future.",
+  "Day 12 – Your kindness is a rare power.",
+  "Day 13 – Every battle makes you stronger.",
+  "Day 14 – You shine like winter stars.",
+  "Day 15 – Your loyalty is legendary.",
+  "Day 16 – Magic follows those who believe.",
+  "Day 17 – You are forging your own destiny.",
+  "Day 18 – Your determination is fierce.",
+  "Day 19 – The faction stands with you.",
+  "Day 20 – You bring hope to every fight.",
+  "Day 21 – Your journey inspires others.",
+  "Day 22 – Power flows in your spirit.",
+  "Day 23 – A hero is one who keeps going.",
+  "Day 24 – Merry Christmas, brave Uprising soul!"
+];
+const today = new Date();
+const currentDay = today.getDate(); // real unlock
+
+const grid = document.getElementById("grid");
+messages.forEach((m,i)=>{
+  const d = i+1;
+  const div = document.createElement("div");
+  div.className="cell";
+  if(d > currentDay) div.classList.add("locked");
+  div.textContent=d;
+  div.onclick=()=>{
+    if(div.classList.contains("locked")) return;
+    msgText.textContent=m;
+    msgBox.style.display='block';
+  };
+  grid.appendChild(div);
+});
+</script>
+</body>
+</html>
